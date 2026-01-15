@@ -14,7 +14,7 @@ final class FirstController extends AbstractController
         return new Response("HELLO WARUDO !");
     }
 
-    #[Route('/', name: 'app_home')]
+    #[Route('/first/home', name: 'app_first_home')]
     public function home(): Response
     {
         return new Response("Page d'accueil !");

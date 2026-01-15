@@ -1,39 +1,34 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Cours index{% endblock %}
+{% block title %}Liste des cours{% endblock %}
 
 {% block body %}
-    <h1>Cours index</h1>
+    <h1 class="mb-4">Liste des cours</h1>
 
-    <table class="table">
-        <thead>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
             <tr>
-                <th>Id</th>
-                <th>Nom</th>
                 <th>Semestre</th>
-                <th>Description</th>
-                <th>actions</th>
+                <th>Nom</th>
             </tr>
         </thead>
         <tbody>
-        {% for cour in cours %}
+        {% for cours in cours %}
             <tr>
-                <td>{{ cour.id }}</td>
-                <td>{{ cour.nom }}</td>
-                <td>{{ cour.semestre }}</td>
-                <td>{{ cour.Description }}</td>
+                <td>{{ cours.semestre }}</td>
                 <td>
-                    <a href="{{ path('app_cours_show', {'id': cour.id}) }}">show</a>
-                    <a href="{{ path('app_cours_edit', {'id': cour.id}) }}">edit</a>
+                    <a href="{{ path('app_cours_show', {'id': cours.id}) }}" class="text-decoration-none">
+                        {{ cours.nom }}
+                    </a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="2" class="text-center">Aucun cours trouvé</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_cours_new') }}">Create new</a>
+    <a href="{{ path('app_cours_new') }}" class="btn btn-primary">Créer un nouveau cours</a>
 {% endblock %}

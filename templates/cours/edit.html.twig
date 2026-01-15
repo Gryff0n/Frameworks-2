@@ -1,13 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Cours{% endblock %}
+{% block title %}Modifier le cours{% endblock %}
 
 {% block body %}
-    <h1>Edit Cours</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">Modifier le cours</h3>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.nom, 'Nom du cours', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.nom) }}
+                        </div>
 
-    {{ include('cours/_form.html.twig', {'button_label': 'Update'}) }}
+                        <div class="mb-3">
+                            {{ form_label(form.semestre, 'Semestre', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.semestre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.semestre) }}
+                        </div>
 
-    <a href="{{ path('app_cours_index') }}">back to list</a>
+                        <div class="mb-3">
+                            {{ form_label(form.Description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.Description, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+                            {{ form_errors(form.Description) }}
+                        </div>
 
-    {{ include('cours/_delete_form.html.twig') }}
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_cours_show', {'id': cour.id}) }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

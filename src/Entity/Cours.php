@@ -23,6 +23,18 @@ class Cours
     #[ORM\Column(type: Types::TEXT)]
     private ?string $Description = null;
 
+    #[ORM\Column]
+    private ?int $ECTS = null;
+
+    #[ORM\Column]
+    private ?int $heureCM = null;
+
+    #[ORM\Column]
+    private ?int $heureTD = null;
+
+    #[ORM\Column]
+    private ?int $heureTP = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +72,54 @@ class Cours
     public function setDescription(string $Description): static
     {
         $this->Description = $Description;
+
+        return $this;
+    }
+
+    public function getECTS(): ?int
+    {
+        return $this->ECTS;
+    }
+
+    public function setECTS(int $ECTS): static
+    {
+        $this->ECTS = $ECTS;
+
+        return $this;
+    }
+
+    public function getHeureCM(): ?int
+    {
+        return $this->heureCM;
+    }
+
+    public function setHeureCM(int $heureCM): static
+    {
+        $this->heureCM = $heureCM;
+
+        return $this;
+    }
+
+    public function getHeureTD(): ?int
+    {
+        return $this->heureTD;
+    }
+
+    public function setHeureTD(int $heureTD): static
+    {
+        $this->heureTD = $heureTD;
+
+        return $this;
+    }
+
+    public function getHeureTP(): ?int
+    {
+        return $this->heureTP;
+    }
+
+    public function setHeureTP(int $heureTP): static
+    {
+        $this->heureTP = $heureTP;
 
         return $this;
     }
