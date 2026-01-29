@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block title %}Liste des formations{% endblock %}
+{% block body %}
+    <h1 class="mb-4">Liste des formations</h1>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Niveau</th>
+                <th>Intitulé</th>
+                <th>Parcours</th>
+                <th>Nombre de cours</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for formation in formations %}
+            <tr>
+                <td>
+                    <span class="badge bg-primary">{{ formation.niveau }}</span>
+                </td>
+                <td>
+                    <a href="{{ path('app_formation_show', {'id': formation.id}) }}" class="text-decoration-none">
+                        {{ formation.intitule }}
+                    </a>
+                </td>
+                <td>{{ formation.parcours }}</td>
+                <td>
+                    <span class="badge bg-info">{{ formation.cours|length }} cours</span>
+                </td>
+                <td>
+                    <a href="{{ path('app_formation_show', {'id': formation.id}) }}" class="btn btn-sm btn-info">Voir</a>
+                    <a href="{{ path('app_formation_edit', {'id': formation.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center">Aucune formation trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ path('app_formation_new') }}" class="btn btn-primary">Créer une nouvelle formation</a>
+{% endblock %}

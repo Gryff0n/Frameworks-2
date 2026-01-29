@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}{{ cour.nom }}{% endblock %}
-
 {% block body %}
     <div class="row">
         <div class="col-md-10 mx-auto">
@@ -15,7 +13,23 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <th style="width: 30%;">Semestre</th>
+                                <th style="width: 30%;">Formation(s)</th>
+                                <td>
+                                    {% if cour.formations|length > 0 %}
+                                        {% for formation in cour.formations %}
+                                            <a href="{{ path('app_formation_show', {'id': formation.id}) }}" class="text-decoration-none">
+                                                <span class="badge bg-primary">{{ formation.niveau }}</span>
+                                                {{ formation.intitule }} - {{ formation.parcours }}
+                                            </a>
+                                            {% if not loop.last %}<br>{% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">Aucune formation</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Semestre</th>
                                 <td>Semestre {{ cour.semestre }}</td>
                             </tr>
                             <tr>
@@ -32,7 +46,6 @@
                     </table>
                 </div>
             </div>
-
             <div class="card shadow mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Volume horaire</h5>
@@ -72,7 +85,27 @@
                     </div>
                 </div>
             </div>
-
+            <div class="card shadow mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Informations de suivi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong><i class="bi bi-calendar-plus"></i> Date de création :</strong><br>
+                                <span class="text-muted">{{ cour.dateCreation|date('d/m/Y à H:i') }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong><i class="bi bi-calendar-check"></i> Dernière modification :</strong><br>
+                                <span class="text-muted">{{ cour.dateModification|date('d/m/Y à H:i') }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="mt-4">
                 <a href="{{ path('app_cours_index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Retour à la liste

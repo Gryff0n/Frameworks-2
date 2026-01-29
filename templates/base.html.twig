@@ -21,11 +21,23 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_cours_index') }}">Tous les cours</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="coursDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Cours
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="coursDropdown">
+                            <li><a class="dropdown-item" href="{{ path('app_cours_index') }}">Tous les cours</a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_cours_new') }}">Créer un cours</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_cours_new') }}">Créer un cours</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="formationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Formations
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="formationDropdown">
+                            <li><a class="dropdown-item" href="{{ path('app_formation_index') }}">Toutes les formations</a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_formation_new') }}">Créer une formation</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

@@ -5,8 +5,11 @@ namespace App\Entity;
 use App\Repository\CoursRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: CoursRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Cours
 {
     #[ORM\Id]
@@ -34,6 +37,14 @@ class Cours
 
     #[ORM\Column]
     private ?int $heureTP = null;
+
+    #[ORM\ManyToMany(targetEntity: Formation::class, inversedBy: 'cours')]
+    private Collection $formations;
+
+    public function __construct()
+    {
+        $this->formations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -123,4 +134,59 @@ class Cours
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Formation>
+     */
+    public function getFormations(): Collection
+    {
+        return $this->formations;
+    }
+
+    public function addFormation(Formation $formation): static
+    {
+        if (!$this->formations->contains($formation)) {
+            $this->formations->add($formation);
+        }
+
+        return $this;
+    }
+
+    public function removeFormation(Formation $formation): static
+    {
+        $this->formations->removeElement($formation);
+
+        return $this;
+    }
+
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateCreation = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateModification = null;
+
+    #[ORM\PrePersist]
+    public function setDateCreationValue(): void
+    {
+        $this->dateCreation = new \DateTime();
+        $this->dateModification = new \DateTime();
+    }
+
+    #[ORM\PreUpdate]
+    public function setDateModificationValue(): void
+    {
+        $this->dateModification = new \DateTime();
+    }
+
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+
+    public function getDateModification(): ?\DateTimeInterface
+    {
+        return $this->dateModification;
+    }
+
 }

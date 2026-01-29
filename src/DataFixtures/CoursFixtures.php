@@ -2,13 +2,24 @@
 namespace App\DataFixtures;
 
 use App\Entity\Cours;
+use App\Entity\Formation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-class CoursFixtures extends Fixture
+class CoursFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
+        // Récupérer toutes les formations depuis la base
+        $formations = $manager->getRepository(Formation::class)->findAll();
+        
+        if (count($formations) === 0) {
+            throw new \Exception('Aucune formation trouvée. Assurez-vous que FormationFixtures a été chargée.');
+        }
+        
         $coursData = [
             [1, 'Programmation Impérative', '## Introduction à la programmation en C
 
@@ -51,7 +62,7 @@ Découvrez comment fonctionne un ordinateur de l\'intérieur !
 - Interfaces et classes abstraites
 
 Exemple de code :
-`````java
+``````java
 public class Etudiant {
     private String nom;
     
@@ -59,7 +70,7 @@ public class Etudiant {
         this.nom = nom;
     }
 }
-`````
+``````
 
 > La POO est un *paradigme incontournable* en développement moderne.', 6, 20, 20, 20],
 
@@ -75,11 +86,11 @@ public class Etudiant {
 4. Transactions et contraintes
 
 Exemple de requête :
-`````sql
+``````sql
 SELECT nom, prenom 
 FROM etudiants 
 WHERE semestre = 2;
-````', 6, 18, 18, 18],
+`````', 6, 18, 18, 18],
 
             [3, 'Algorithmique Avancée', '## Complexité et structures de données
 
@@ -133,11 +144,11 @@ Créez des sites web *dynamiques* et *attractifs* !', 5, 15, 15, 20],
 - Synchronisation et communications inter-processus
 
 Commandes essentielles :
-```bash
+````bash
 ps aux | grep java
 kill -9 1234
 chmod 755 script.sh
-```
+````
 
 *Maîtrisez l\'environnement de développement professionnel !*', 6, 20, 20, 15],
 
@@ -158,7 +169,7 @@ chmod 755 script.sh
 **Outils utilisés :** Python, TensorFlow, scikit-learn', 6, 24, 12, 12],
         ];
 
-        foreach ($coursData as $data) {
+        foreach ($coursData as $index => $data) {
             $cours = new Cours();
             $cours->setSemestre($data[0]);
             $cours->setNom($data[1]);
@@ -166,11 +177,30 @@ chmod 755 script.sh
             $cours->setEcts($data[3]);
             $cours->setHeureCM($data[4]);     
             $cours->setHeureTD($data[5]);   
-            $cours->setHeureTP($data[6]);      
+            $cours->setHeureTP($data[6]);
+            
+            // Associer à 1 ou 2 formations de manière aléatoire
+            $formationIndex1 = $index % count($formations);
+            $cours->addFormation($formations[$formationIndex1]);
+            
+            // Certains cours peuvent appartenir à plusieurs formations
+            if ($index % 3 === 0 && count($formations) > 1) {
+                $formationIndex2 = ($index + 1) % count($formations);
+                if ($formationIndex2 !== $formationIndex1) {
+                    $cours->addFormation($formations[$formationIndex2]);
+                }
+            }
             
             $manager->persist($cours);
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            FormationFixtures::class,
+        ];
     }
 }

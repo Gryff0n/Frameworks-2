@@ -1,42 +1,122 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Modifier le cours{% endblock %}
-
 {% block body %}
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
+            <h1 class="mb-4">Modifier le cours : {{ cour.nom }}</h1>
+            
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
-                    <h3 class="mb-0">Modifier le cours</h3>
+                    <h5 class="mb-0">Informations du cours</h5>
                 </div>
                 <div class="card-body">
                     {{ form_start(form) }}
-                        <div class="mb-3">
-                            {{ form_label(form.nom, 'Nom du cours', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.nom) }}
+                        
+                        {# Informations générales #}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Informations générales</h6>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    {{ form_label(form.nom, 'Nom du cours', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Programmation Orientée Objet'}}) }}
+                                    {{ form_errors(form.nom) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form_label(form.semestre, 'Semestre', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.semestre, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.semestre) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            {# Formations #}
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <h6 class="text-warning border-bottom pb-2">Formations</h6>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        {{ form_label(form.formations, 'Formations', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                        {{ form_widget(form.formations) }}
+                                        <small class="text-muted">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs formations</small>
+                                        {{ form_errors(form.formations) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                        {# Volume horaire et ECTS #}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Volume horaire et crédits</h6>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form_label(form.heureCM, 'Heures CM', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.heureCM, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+                                    {{ form_errors(form.heureCM) }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form_label(form.heureTD, 'Heures TD', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.heureTD, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+                                    {{ form_errors(form.heureTD) }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form_label(form.heureTP, 'Heures TP', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.heureTP, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+                                    {{ form_errors(form.heureTP) }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    {{ form_label(form.ECTS, 'Crédits ECTS', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.ECTS, {'attr': {'class': 'form-control', 'placeholder': '6'}}) }}
+                                    {{ form_errors(form.ECTS) }}
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form_label(form.semestre, 'Semestre', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.semestre, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.semestre) }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.Description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.Description, {'attr': {'class': 'form-control', 'rows': 5}}) }}
-                            {{ form_errors(form.Description) }}
+                        {# Description #}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Description</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.Description, 'Description du cours', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.Description, {'attr': {'class': 'form-control', 'rows': 8, 'placeholder': 'Décrivez le contenu du cours...'}}) }}
+                                    <small class="text-muted">Vous pouvez utiliser du Markdown pour formater le texte</small>
+                                    {{ form_errors(form.Description) }}
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ path('app_cours_show', {'id': cour.id}) }}" class="btn btn-secondary">Annuler</a>
+                            <div>
+                                <a href="{{ path('app_cours_show', {'id': cour.id}) }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Annuler
+                                </a>
+                                <a href="{{ path('app_cours_index') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-list"></i> Liste des cours
+                                </a>
+                            </div>
                             <button type="submit" class="btn btn-success">
-                                <i class="bi bi-save"></i> Enregistrer les modifications
+                                <i class="bi bi-check-circle"></i> Enregistrer les modifications
                             </button>
                         </div>
                     {{ form_end(form) }}
                 </div>
+            </div>
+            
+            <div class="mt-3">
+                {{ include('cours/_delete_form.html.twig') }}
             </div>
         </div>
     </div>
