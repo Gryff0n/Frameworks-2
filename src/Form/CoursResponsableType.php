@@ -2,30 +2,32 @@
 
 namespace App\Form;
 
-use App\Entity\Formation;
+use App\Entity\Cours;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class FormationType extends AbstractType
+class CoursResponsableType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('niveau')
-            ->add('intitule')
-            ->add('parcours')
-            ->add('responsable', EntityType::class, [
+            ->add('Description', TextareaType::class, [
+                'label' => 'Description',
+                'attr' => ['rows' => 10, 'class' => 'form-control']
+            ])
+            ->add('enseignants', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function(User $user) {
                     return $user->getPrenom() . ' ' . $user->getNom() . ' (' . $user->getGrade() . ')';
                 },
-                'placeholder' => 'Sélectionner un responsable',
-                'required' => false,
-                'attr' => ['class' => 'form-select'],
-                'label' => 'Responsable de la formation',
+                'multiple' => true,
+                'expanded' => false,
+                'attr' => ['class' => 'form-select', 'size' => 5],
+                'label' => 'Enseignants',
             ])
         ;
     }
@@ -33,7 +35,7 @@ class FormationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Formation::class,
+            'data_class' => Cours::class,
         ]);
     }
 }

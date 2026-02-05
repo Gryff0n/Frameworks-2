@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\User;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
+class RegistrationFormType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse email',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'exemple@univ.fr']
+            ])
+            ->add('nom', TextType::class, [
+                'label' => 'Nom',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Dupont']
+            ])
+            ->add('prenom', TextType::class, [
+                'label' => 'Prénom',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Jean']
+            ])
+            ->add('grade', ChoiceType::class, [
+                'label' => 'Grade',
+                'choices' => [
+                    'Professeur' => 'Professeur',
+                    'Maître de conférences' => 'Maître de conférences',
+                    'Maîtresse de conférences' => 'Maîtresse de conférences',
+                    'PRAG' => 'PRAG',
+                    'PRCE' => 'PRCE',
+                    'CPJ' => 'CPJ',
+                    'Enseignant-chercheur contractuel' => 'Enseignant-chercheur contractuel',
+                    'Enseignant contractuel' => 'Enseignant contractuel',
+                    'ATER' => 'ATER',
+                    'DMCE' => 'DMCE',
+                    'Intervenant extérieur' => 'Intervenant extérieur',
+                ],
+                'attr' => ['class' => 'form-select'],
+                'placeholder' => 'Sélectionnez votre grade'
+            ])
+            ->add('composante', ChoiceType::class, [
+                'label' => 'Composante de rattachement',
+                'choices' => [
+                    'UFR ST' => 'UFR ST',
+                    'UFR DEG' => 'UFR DEG',
+                    'UFR LLSH' => 'UFR LLSH',
+                    'IUT' => 'IUT',
+                    'Polytech' => 'Polytech',
+                    'ESPE' => 'ESPE',
+                ],
+                'attr' => ['class' => 'form-select'],
+                'placeholder' => 'Sélectionnez votre composante'
+            ])
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'mapped' => false,
+                'first_options' => [
+                    'label' => 'Mot de passe',
+                    'attr' => ['class' => 'form-control', 'autocomplete' => 'new-password'],
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Veuillez entrer un mot de passe',
+                        ]),
+                        new Length([
+                            'min' => 6,
+                            'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
+                            'max' => 4096,
+                        ]),
+                    ],
+                ],
+                'second_options' => [
+                    'label' => 'Confirmer le mot de passe',
+                    'attr' => ['class' => 'form-control', 'autocomplete' => 'new-password'],
+                ],
+                'invalid_message' => 'Les mots de passe doivent correspondre.',
+            ])
+            ->add('agreeTerms', CheckboxType::class, [
+                'label' => 'J\'accepte les conditions d\'utilisation',
+                'mapped' => false,
+                'constraints' => [
+                    new IsTrue([
+                        'message' => 'Vous devez accepter les conditions d\'utilisation.',
+                    ]),
+                ],
+                'attr' => ['class' => 'form-check-input']
+            ])
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class,
+        ]);
+    }
+}

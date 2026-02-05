@@ -39,6 +39,21 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th>Responsable</th>
+                                <td>
+                                    {% if cour.responsable %}
+                                        <i class="bi bi-person-badge-fill"></i>
+                                        <strong>{{ cour.responsable.prenom }} {{ cour.responsable.nom }}</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ cour.responsable.grade }} - {{ cour.responsable.composante }}
+                                        </small>
+                                    {% else %}
+                                        <span class="text-muted">Aucun responsable assigné</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>Description</th>
                                 <td>{{ cour.Description|markdown_to_html }}</td>
                             </tr>
@@ -46,6 +61,42 @@
                     </table>
                 </div>
             </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-people-fill"></i> Équipe enseignante</h5>
+                </div>
+                <div class="card-body">
+                    {% if cour.enseignants|length > 0 %}
+                        <div class="row">
+                            {% for enseignant in cour.enseignants %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="bi bi-person"></i>
+                                                {{ enseignant.prenom }} {{ enseignant.nom }}
+                                                {% if app.user and app.user.id == enseignant.id %}
+                                                    <span class="badge bg-info">Vous</span>
+                                                {% endif %}
+                                            </h6>
+                                            <p class="card-text mb-0">
+                                                <small class="text-muted">{{ enseignant.grade }}</small><br>
+                                                <small class="text-muted">{{ enseignant.composante }}</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> Aucun enseignant assigné à ce cours pour le moment.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="card shadow mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Volume horaire</h5>
@@ -85,6 +136,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="card shadow mb-4">
                 <div class="card-header bg-secondary text-white">
                     <h5 class="mb-0">Informations de suivi</h5>
@@ -106,14 +158,36 @@
                     </div>
                 </div>
             </div>
+
             <div class="mt-4">
                 <a href="{{ path('app_cours_index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
-                <a href="{{ path('app_cours_edit', {'id': cour.id}) }}" class="btn btn-warning">
-                    <i class="bi bi-pencil"></i> Modifier
-                </a>
-                {{ include('cours/_delete_form.html.twig') }}
+                
+                {# Modifier : responsable de formation OU responsable de cours #}
+                {% if is_granted('COURS_EDIT', cour) or is_granted('COURS_EDIT_LIMITED', cour) %}
+                    <a href="{{ path('app_cours_edit', {'id': cour.id}) }}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Modifier
+                        {% if is_granted('COURS_EDIT_LIMITED', cour) and not is_granted('COURS_EDIT', cour) %}
+                            <small>(description et enseignants)</small>
+                        {% endif %}
+                    </a>
+                {% endif %}
+
+                {# Supprimer : uniquement responsable de formation #}
+                {% if is_granted('COURS_DELETE', cour) %}
+                    {{ include('cours/_delete_form.html.twig') }}
+                {% endif %}
+
+                {# Se retirer : enseignant du cours #}
+                {% if is_granted('COURS_REMOVE_ENSEIGNANT', cour) %}
+                    <form method="post" action="{{ path('app_cours_remove_enseignant', {'id': cour.id}) }}" style="display: inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir vous retirer de ce cours ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('remove-enseignant' ~ cour.id) }}">
+                        <button class="btn btn-danger">
+                            <i class="bi bi-person-dash"></i> Me retirer de ce cours
+                        </button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </div>

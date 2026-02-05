@@ -1,11 +1,11 @@
 <?php
+
 namespace App\DataFixtures;
 
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Faker\Factory;
 
 class UserFixtures extends Fixture
 {
@@ -18,86 +18,89 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('fr_FR');
+        // ============================================
+        // RESPONSABLES DE FORMATION (users 0-5)
+        // ============================================
         
-        $grades = [
-            'Professeur',
-            'Maître de conférences',
-            'Maîtresse de conférences',
-            'PRAG',
-            'PRCE',
-            'CPJ',
-            'Enseignant-chercheur contractuel',
-            'Enseignant contractuel',
-            'ATER',
-            'DMCE',
-            'Intervenant extérieur'
-        ];
-        
-        $composantes = [
-            'UFR ST',
-            'UFR DEG',
-            'UFR LLSH',
-            'IUT',
-            'Polytech',
-            'ESPE'
+        $formationResponsables = [
+            ['nom' => 'Dubois', 'prenom' => 'Marie', 'email' => 'marie.dubois@univ.fr', 'grade' => 'Professeur', 'composante' => 'UFR ST'],
+            ['nom' => 'Martin', 'prenom' => 'Pierre', 'email' => 'pierre.martin@univ.fr', 'grade' => 'Professeur', 'composante' => 'UFR DEG'],
+            ['nom' => 'Bernard', 'prenom' => 'Sophie', 'email' => 'sophie.bernard@univ.fr', 'grade' => 'Maître de conférences', 'composante' => 'UFR LLSH'],
+            ['nom' => 'Petit', 'prenom' => 'Thomas', 'email' => 'thomas.petit@univ.fr', 'grade' => 'Maîtresse de conférences', 'composante' => 'IUT'],
+            ['nom' => 'Robert', 'prenom' => 'Claire', 'email' => 'claire.robert@univ.fr', 'grade' => 'PRAG', 'composante' => 'Polytech'],
+            ['nom' => 'Richard', 'prenom' => 'Lucas', 'email' => 'lucas.richard@univ.fr', 'grade' => 'Professeur', 'composante' => 'UFR ST'],
         ];
 
-        // Créer un utilisateur de test avec email connu
-        $testUser = new User();
-        $testUser->setNom('Dupont');
-        $testUser->setPrenom('Jean');
-        $testUser->setEmail('admin@example.com');
-        $testUser->setGrade('Professeur');
-        $testUser->setComposante('UFR ST');
-        $testUser->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_FORMATION']);
-        $hashedPassword = $this->passwordHasher->hashPassword($testUser, 'password');
-        $testUser->setPassword($hashedPassword);
-        $manager->persist($testUser);
-        
-        // Sauvegarder la référence pour l'utiliser dans les autres fixtures
-        $this->addReference('user-0', $testUser);
-
-        // Créer des utilisateurs avec des grades permettant d'être responsable de formation
-        $gradesResponsables = ['Professeur', 'Maître de conférences', 'Maîtresse de conférences', 'PRAG'];
-        
-        for ($i = 1; $i <= 5; $i++) {
+        foreach ($formationResponsables as $index => $data) {
             $user = new User();
-            $user->setNom($faker->lastName());
-            $user->setPrenom($faker->firstName());
-            $user->setEmail($faker->email());
-            $user->setGrade($faker->randomElement($gradesResponsables));
-            $user->setComposante($faker->randomElement($composantes));
+            $user->setNom($data['nom']);
+            $user->setPrenom($data['prenom']);
+            $user->setEmail($data['email']);
+            $user->setGrade($data['grade']);
+            $user->setComposante($data['composante']);
             $user->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_FORMATION']);
             
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password');
             $user->setPassword($hashedPassword);
             
             $manager->persist($user);
-            $this->addReference('user-' . $i, $user);
+            $this->addReference('user-' . $index, $user);
         }
 
-        // Créer des enseignants qui peuvent être responsables de cours
-        for ($i = 6; $i <= 15; $i++) {
+        // ============================================
+        // RESPONSABLES DE COURS (users 6-12)
+        // ============================================
+        
+        $coursResponsables = [
+            ['nom' => 'Durand', 'prenom' => 'Jean', 'email' => 'jean.durand@univ.fr', 'grade' => 'Maître de conférences', 'composante' => 'UFR ST'],
+            ['nom' => 'Moreau', 'prenom' => 'Julie', 'email' => 'julie.moreau@univ.fr', 'grade' => 'PRAG', 'composante' => 'UFR ST'],
+            ['nom' => 'Simon', 'prenom' => 'Alexandre', 'email' => 'alexandre.simon@univ.fr', 'grade' => 'Maîtresse de conférences', 'composante' => 'IUT'],
+            ['nom' => 'Laurent', 'prenom' => 'Emma', 'email' => 'emma.laurent@univ.fr', 'grade' => 'PRCE', 'composante' => 'UFR DEG'],
+            ['nom' => 'Lefevre', 'prenom' => 'Nicolas', 'email' => 'nicolas.lefevre@univ.fr', 'grade' => 'Enseignant-chercheur contractuel', 'composante' => 'Polytech'],
+            ['nom' => 'Michel', 'prenom' => 'Camille', 'email' => 'camille.michel@univ.fr', 'grade' => 'ATER', 'composante' => 'UFR ST'],
+            ['nom' => 'Garcia', 'prenom' => 'Hugo', 'email' => 'hugo.garcia@univ.fr', 'grade' => 'Maître de conférences', 'composante' => 'UFR LLSH'],
+        ];
+
+        foreach ($coursResponsables as $index => $data) {
             $user = new User();
-            $user->setNom($faker->lastName());
-            $user->setPrenom($faker->firstName());
-            $user->setEmail($faker->email());
-            $user->setGrade($faker->randomElement($grades));
-            $user->setComposante($faker->randomElement($composantes));
-            
-            // Certains seront responsables de cours, d'autres juste enseignants
-            if ($i <= 12) {
-                $user->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_COURS', 'ROLE_ENSEIGNANT']);
-            } else {
-                $user->setRoles(['ROLE_USER', 'ROLE_ENSEIGNANT']);
-            }
+            $user->setNom($data['nom']);
+            $user->setPrenom($data['prenom']);
+            $user->setEmail($data['email']);
+            $user->setGrade($data['grade']);
+            $user->setComposante($data['composante']);
+            $user->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_COURS', 'ROLE_ENSEIGNANT']);
             
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password');
             $user->setPassword($hashedPassword);
             
             $manager->persist($user);
-            $this->addReference('user-' . $i, $user);
+            $this->addReference('user-' . (6 + $index), $user);
+        }
+
+        // ============================================
+        // ENSEIGNANTS SIMPLES (users 13-15)
+        // ============================================
+        
+        $enseignants = [
+            ['nom' => 'Roux', 'prenom' => 'Léa', 'email' => 'lea.roux@univ.fr', 'grade' => 'Enseignant contractuel', 'composante' => 'UFR ST'],
+            ['nom' => 'David', 'prenom' => 'Louis', 'email' => 'louis.david@univ.fr', 'grade' => 'DMCE', 'composante' => 'IUT'],
+            ['nom' => 'Bertrand', 'prenom' => 'Chloé', 'email' => 'chloe.bertrand@univ.fr', 'grade' => 'Intervenant extérieur', 'composante' => 'Polytech'],
+        ];
+
+        foreach ($enseignants as $index => $data) {
+            $user = new User();
+            $user->setNom($data['nom']);
+            $user->setPrenom($data['prenom']);
+            $user->setEmail($data['email']);
+            $user->setGrade($data['grade']);
+            $user->setComposante($data['composante']);
+            $user->setRoles(['ROLE_USER', 'ROLE_ENSEIGNANT']);
+            
+            $hashedPassword = $this->passwordHasher->hashPassword($user, 'password');
+            $user->setPassword($hashedPassword);
+            
+            $manager->persist($user);
+            $this->addReference('user-' . (13 + $index), $user);
         }
 
         $manager->flush();

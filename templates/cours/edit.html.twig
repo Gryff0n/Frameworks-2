@@ -3,7 +3,20 @@
 {% block body %}
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <h1 class="mb-4">Modifier le cours : {{ cour.nom }}</h1>
+            <h1 class="mb-4">
+                Modifier le cours : {{ cour.nom }}
+                {% if is_limited_edit is defined and is_limited_edit %}
+                    <span class="badge bg-warning text-dark">Édition limitée</span>
+                {% endif %}
+            </h1>
+
+            {% if is_limited_edit is defined and is_limited_edit %}
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Mode d'édition limité :</strong> En tant que responsable de ce cours, vous pouvez uniquement modifier la description et gérer les enseignants.
+                    Les autres informations (nom, semestre, volumes horaires, etc.) ne peuvent être modifiées que par le responsable de formation.
+                </div>
+            {% endif %}
             
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
@@ -12,7 +25,8 @@
                 <div class="card-body">
                     {{ form_start(form) }}
                         
-                        {# Informations générales #}
+                        {# Informations générales - seulement si édition complète #}
+                        {% if not (is_limited_edit is defined and is_limited_edit) %}
                         <div class="row mb-4">
                             <div class="col-md-12">
                                 <h6 class="text-warning border-bottom pb-2">Informations générales</h6>
@@ -32,21 +46,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        {# Formations #}
                         <div class="row mb-4">
-                            {# Formations #}
-                            <div class="row mb-4">
-                                <div class="col-md-12">
-                                    <h6 class="text-warning border-bottom pb-2">Formations</h6>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        {{ form_label(form.formations, 'Formations', {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                                        {{ form_widget(form.formations) }}
-                                        <small class="text-muted">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs formations</small>
-                                        {{ form_errors(form.formations) }}
-                                    </div>
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Formations</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.formations, 'Formations', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.formations) }}
+                                    <small class="text-muted">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs formations</small>
+                                    {{ form_errors(form.formations) }}
                                 </div>
                             </div>
+                        </div>
+
+                        {# Responsable et Enseignants #}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Équipe pédagogique</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.responsable, 'Responsable du cours', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.responsable) }}
+                                    {{ form_errors(form.responsable) }}
+                                </div>
+                            </div>
+                        </div>
 
                         {# Volume horaire et ECTS #}
                         <div class="row mb-4">
@@ -82,8 +110,9 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
 
-                        {# Description #}
+                        {# Description - toujours visible #}
                         <div class="row mb-4">
                             <div class="col-md-12">
                                 <h6 class="text-warning border-bottom pb-2">Description</h6>
@@ -94,6 +123,21 @@
                                     {{ form_widget(form.Description, {'attr': {'class': 'form-control', 'rows': 8, 'placeholder': 'Décrivez le contenu du cours...'}}) }}
                                     <small class="text-muted">Vous pouvez utiliser du Markdown pour formater le texte</small>
                                     {{ form_errors(form.Description) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Enseignants - toujours visible #}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h6 class="text-warning border-bottom pb-2">Enseignants</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.enseignants, 'Enseignants du cours', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                                    {{ form_widget(form.enseignants) }}
+                                    <small class="text-muted">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs enseignants</small>
+                                    {{ form_errors(form.enseignants) }}
                                 </div>
                             </div>
                         </div>
@@ -115,9 +159,11 @@
                 </div>
             </div>
             
+            {% if not (is_limited_edit is defined and is_limited_edit) %}
             <div class="mt-3">
                 {{ include('cours/_delete_form.html.twig') }}
             </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
