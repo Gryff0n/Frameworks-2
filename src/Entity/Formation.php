@@ -30,6 +30,9 @@ class Formation
     #[ORM\ManyToMany(targetEntity: Cours::class, mappedBy: 'formations')]
     private Collection $cours;
 
+    #[ORM\ManyToOne(inversedBy: 'formationsResponsable')]
+    private ?User $responsable = null;
+
     public function __construct()
     {
         $this->cours = new ArrayCollection();
@@ -102,6 +105,18 @@ class Formation
                 $cour->setFormation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getResponsable(): ?User
+    {
+        return $this->responsable;
+    }
+
+    public function setResponsable(?User $responsable): static
+    {
+        $this->responsable = $responsable;
 
         return $this;
     }

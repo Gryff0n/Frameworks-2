@@ -44,6 +44,7 @@ class Cours
     public function __construct()
     {
         $this->formations = new ArrayCollection();
+        $this->enseignants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,6 +167,15 @@ class Cours
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $dateModification = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'coursEnseignants')]
+    private Collection $enseignants;
+
+    #[ORM\ManyToOne(inversedBy: 'coursResponsable')]
+    private ?User $responsable = null;
+
     #[ORM\PrePersist]
     public function setDateCreationValue(): void
     {
@@ -187,6 +197,42 @@ class Cours
     public function getDateModification(): ?\DateTimeInterface
     {
         return $this->dateModification;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getEnseignants(): Collection
+    {
+        return $this->enseignants;
+    }
+
+    public function addEnseignant(User $enseignant): static
+    {
+        if (!$this->enseignants->contains($enseignant)) {
+            $this->enseignants->add($enseignant);
+        }
+
+        return $this;
+    }
+
+    public function removeEnseignant(User $enseignant): static
+    {
+        $this->enseignants->removeElement($enseignant);
+
+        return $this;
+    }
+
+    public function getResponsable(): ?User
+    {
+        return $this->responsable;
+    }
+
+    public function setResponsable(?User $responsable): static
+    {
+        $this->responsable = $responsable;
+
+        return $this;
     }
 
 }
