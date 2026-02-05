@@ -50,11 +50,35 @@ class UserFixtures extends Fixture
         $testUser->setEmail('admin@example.com');
         $testUser->setGrade('Professeur');
         $testUser->setComposante('UFR ST');
+        $testUser->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_FORMATION']);
         $hashedPassword = $this->passwordHasher->hashPassword($testUser, 'password');
         $testUser->setPassword($hashedPassword);
         $manager->persist($testUser);
+        
+        // Sauvegarder la référence pour l'utiliser dans les autres fixtures
+        $this->addReference('user-0', $testUser);
 
-        for ($i = 0; $i < 10; $i++) {
+        // Créer des utilisateurs avec des grades permettant d'être responsable de formation
+        $gradesResponsables = ['Professeur', 'Maître de conférences', 'Maîtresse de conférences', 'PRAG'];
+        
+        for ($i = 1; $i <= 5; $i++) {
+            $user = new User();
+            $user->setNom($faker->lastName());
+            $user->setPrenom($faker->firstName());
+            $user->setEmail($faker->email());
+            $user->setGrade($faker->randomElement($gradesResponsables));
+            $user->setComposante($faker->randomElement($composantes));
+            $user->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_FORMATION']);
+            
+            $hashedPassword = $this->passwordHasher->hashPassword($user, 'password');
+            $user->setPassword($hashedPassword);
+            
+            $manager->persist($user);
+            $this->addReference('user-' . $i, $user);
+        }
+
+        // Créer des enseignants qui peuvent être responsables de cours
+        for ($i = 6; $i <= 15; $i++) {
             $user = new User();
             $user->setNom($faker->lastName());
             $user->setPrenom($faker->firstName());
@@ -62,19 +86,18 @@ class UserFixtures extends Fixture
             $user->setGrade($faker->randomElement($grades));
             $user->setComposante($faker->randomElement($composantes));
             
-            // Attribuer des rôles aléatoirement
-            $rolesPossibles = [
-                ['ROLE_USER'],
-                ['ROLE_USER', 'ROLE_RESPONSABLE_FORMATION'],
-                ['ROLE_USER', 'ROLE_RESPONSABLE_COURS'],
-                ['ROLE_USER', 'ROLE_ENSEIGNANT'],
-            ];
-            $user->setRoles($faker->randomElement($rolesPossibles));
+            // Certains seront responsables de cours, d'autres juste enseignants
+            if ($i <= 12) {
+                $user->setRoles(['ROLE_USER', 'ROLE_RESPONSABLE_COURS', 'ROLE_ENSEIGNANT']);
+            } else {
+                $user->setRoles(['ROLE_USER', 'ROLE_ENSEIGNANT']);
+            }
             
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password');
             $user->setPassword($hashedPassword);
             
             $manager->persist($user);
+            $this->addReference('user-' . $i, $user);
         }
 
         $manager->flush();

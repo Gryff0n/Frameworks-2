@@ -3,23 +3,15 @@ namespace App\DataFixtures;
 
 use App\Entity\Cours;
 use App\Entity\Formation;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 class CoursFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Récupérer toutes les formations depuis la base
-        $formations = $manager->getRepository(Formation::class)->findAll();
-        
-        if (count($formations) === 0) {
-            throw new \Exception('Aucune formation trouvée. Assurez-vous que FormationFixtures a été chargée.');
-        }
-        
         $coursData = [
             [1, 'Programmation Impérative', '## Introduction à la programmation en C
 
@@ -90,7 +82,7 @@ Exemple de requête :
 SELECT nom, prenom 
 FROM etudiants 
 WHERE semestre = 2;
-`````', 6, 18, 18, 18],
+``````', 6, 18, 18, 18],
 
             [3, 'Algorithmique Avancée', '## Complexité et structures de données
 
@@ -179,16 +171,33 @@ chmod 755 script.sh
             $cours->setHeureTD($data[5]);   
             $cours->setHeureTP($data[6]);
             
-            // Associer à 1 ou 2 formations de manière aléatoire
-            $formationIndex1 = $index % count($formations);
-            $cours->addFormation($formations[$formationIndex1]);
+            // Associer à 1 ou 2 formations
+            $formationIndex1 = $index % 10;
+            $formation1 = $this->getReference('formation-' . $formationIndex1, Formation::class);
+            $cours->addFormation($formation1);
             
-            // Certains cours peuvent appartenir à plusieurs formations
-            if ($index % 3 === 0 && count($formations) > 1) {
-                $formationIndex2 = ($index + 1) % count($formations);
+            // Certains cours appartiennent à plusieurs formations
+            if ($index % 3 === 0) {
+                $formationIndex2 = ($index + 1) % 10;
                 if ($formationIndex2 !== $formationIndex1) {
-                    $cours->addFormation($formations[$formationIndex2]);
+                    $formation2 = $this->getReference('formation-' . $formationIndex2, Formation::class);
+                    $cours->addFormation($formation2);
                 }
+            }
+            
+            // Assigner un responsable de cours (user-6 à user-12)
+            $responsableIndex = 6 + ($index % 7);
+            $responsable = $this->getReference('user-' . $responsableIndex, User::class);
+            $cours->setResponsable($responsable);
+            
+            // Ajouter des enseignants (2 à 4 par cours)
+            $nbEnseignants = 2 + ($index % 3); // 2, 3 ou 4 enseignants
+            
+            for ($i = 0; $i < $nbEnseignants; $i++) {
+                // Utiliser les users 6 à 15 comme enseignants
+                $enseignantIndex = 6 + (($index + $i) % 10);
+                $enseignant = $this->getReference('user-' . $enseignantIndex, User::class);
+                $cours->addEnseignant($enseignant);
             }
             
             $manager->persist($cours);
